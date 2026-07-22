@@ -8,6 +8,9 @@ import TerminalConsole from "./components/TerminalConsole";
 import TechStackCarousel from "./components/TechStackCarousel";
 import ShowcaseSection from "./components/ShowcaseSection";
 import TestimonialsSection from "./components/TestimonialsSection";
+import GitHubStats from "./components/GitHubStats";
+import CodeEditor from "./components/CodeEditor";
+import TimelineSection from "./components/TimelineSection";
 import CTASection from "./components/CTASection";
 import FooterSection from "./components/FooterSection";
 import ParticleBackground from "./components/ParticleBackground";
@@ -16,12 +19,14 @@ import CursorGlow from "./components/CursorGlow";
 import LoadingScreen from "./components/LoadingScreen";
 import SectionDivider from "./components/SectionDivider";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ReadingProgress from "./components/ReadingProgress";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#home" },
   { label: "Recursos", href: "#recursos" },
   { label: "Capacidades", href: "#capacidades" },
   { label: "Projetos", href: "#projetos" },
+  { label: "Código", href: "#codigo" },
   { label: "Sobre", href: "#sobre" },
 ];
 
@@ -30,58 +35,15 @@ const SECTION_IDS = [
   "recursos",
   "capacidades",
   "projetos",
-  "console",
+  "codigo",
+  "timeline",
   "sobre",
 ];
 
-// Performance monitoring
-const perfMarks: Record<string, number> = {};
-
-function mark(name: string) {
-  if (typeof performance !== "undefined") {
-    performance.mark(`app-${name}`);
-    perfMarks[name] = performance.now();
-  }
-}
-
-function measure(from: string, to: string) {
-  if (
-    typeof performance !== "undefined" &&
-    perfMarks[from] &&
-    perfMarks[to]
-  ) {
-    const duration = perfMarks[to] - perfMarks[from];
-    if (duration > 0) {
-      console.debug(`[Perf] ${from} → ${to}: ${duration.toFixed(1)}ms`);
-    }
-  }
-}
-
 function App() {
-  mark("mount");
-
-  useEffect(() => {
-    mark("mounted");
-    measure("mount", "mounted");
-
-    // Report total JS execution time
-    if (typeof performance !== "undefined") {
-      const navEntry = performance.getEntriesByType("navigation")[0] as (
-        PerformanceNavigationTiming | undefined
-      );
-      if (navEntry) {
-        console.debug(
-          `[Perf] DOM Interactive: ${navEntry.domInteractive.toFixed(0)}ms`
-        );
-        console.debug(
-          `[Perf] Total Load: ${navEntry.loadEventEnd.toFixed(0)}ms`
-        );
-      }
-    }
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-deep-950 text-white overflow-x-hidden">
+      <ReadingProgress />
       <LoadingScreen />
       <CursorGlow />
       <ParticleBackground />
@@ -105,6 +67,12 @@ function App() {
           <SectionDivider variant="line" />
           <ShowcaseSection />
           <SectionDivider variant="glow" />
+          <CodeEditor />
+          <SectionDivider variant="line" />
+          <GitHubStats />
+          <SectionDivider variant="glow" />
+          <TimelineSection />
+          <SectionDivider variant="line" />
           <TestimonialsSection />
           <CTASection />
           <FooterSection />

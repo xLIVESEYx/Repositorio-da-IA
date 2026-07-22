@@ -21,6 +21,9 @@ import LoadingScreen from "./components/LoadingScreen";
 import SectionDivider from "./components/SectionDivider";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ReadingProgress from "./components/ReadingProgress";
+import AIChatDemo from "./components/AIChatDemo";
+import NeuralNetworkViz from "./components/NeuralNetworkViz";
+import KeyboardShortcuts from "./components/KeyboardShortcuts";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#home" },
@@ -28,6 +31,7 @@ const NAV_ITEMS = [
   { label: "Capacidades", href: "#capacidades" },
   { label: "Projetos", href: "#projetos" },
   { label: "Código", href: "#codigo" },
+  { label: "Rede Neural", href: "#rede-neural" },
   { label: "Sobre", href: "#sobre" },
 ];
 
@@ -37,6 +41,7 @@ const SECTION_IDS = [
   "capacidades",
   "projetos",
   "codigo",
+  "rede-neural",
   "timeline",
   "sobre",
 ];
@@ -72,12 +77,16 @@ function App() {
           <SectionDivider variant="line" />
           <GitHubStats />
           <SectionDivider variant="glow" />
+          <NeuralNetworkViz />
+          <SectionDivider variant="line" />
           <TimelineSection />
           <SectionDivider variant="line" />
           <TestimonialsSection />
           <CTASection />
           <FooterSection />
         </ErrorBoundary>
+        <AIChatDemo />
+        <KeyboardShortcuts />
         <ScrollToTop />
       </div>
     </div>

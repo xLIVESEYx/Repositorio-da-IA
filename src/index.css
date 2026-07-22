@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep-950: #05050f;
+  --color-deep-900: #0a0a1a;
+  --color-deep-800: #0f0f24;
+  --color-deep-700: #151530;
+  --color-deep-600: #1a1a40;
+  --color-neon-cyan: #00f0ff;
+  --color-neon-purple: #a855f7;
+  --color-neon-blue: #3b82f6;
+  --color-neon-pink: #ec4899;
+  --color-surface: rgba(15, 15, 36, 0.6);
+  --color-surface-hover: rgba(20, 20, 50, 0.8);
+  --color-border-subtle: rgba(168, 85, 247, 0.15);
+  --color-border-glow: rgba(0, 240, 255, 0.3);
+}
+
+/* Animated background grid pattern */
+@keyframes grid-flow {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-grid-flow {
+  animation: grid-flow 20s linear infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-deep-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neon-purple);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-cyan);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

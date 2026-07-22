@@ -177,16 +177,11 @@ export default function HeroSection() {
           </span>
         </motion.div>
 
-        <motion.h1
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
           <SplitText text="Repositório" className="bg-gradient-to-r from-white via-neon-cyan to-neon-purple bg-clip-text text-transparent" />
           <br />
-          <SplitText text="da IA" className="text-white/90" stagger={0.04} delay={0.3} />
-        </motion.h1>
+          <SplitText text="da IA" className="text-white/90" stagger={0.04} delay={0.6} />
+        </h1>
 
         <motion.p
           className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto mb-10 leading-relaxed"

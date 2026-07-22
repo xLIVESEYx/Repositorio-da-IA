@@ -131,10 +131,17 @@ export default function CodePlayground() {
   const [visibleCodeLines, setVisibleCodeLines] = useState(0);
   const outputRef = useRef<HTMLDivElement>(null);
   const [isCompiling, setIsCompiling] = useState(false);
+  const timersRef = useRef<ReturnType<typeof setInterval>[]>([]);
 
   const demo = DEMOS[activeDemo];
 
+  function clearAllTimers() {
+    timersRef.current.forEach(clearInterval);
+    timersRef.current = [];
+  }
+
   function runDemo() {
+    clearAllTimers();
     setIsRunning(true);
     setIsCompiling(true);
     setOutputLines([]);
@@ -148,6 +155,8 @@ export default function CodePlayground() {
         lineIndex++;
       } else {
         clearInterval(codeTimer);
+        const idx = timersRef.current.indexOf(codeTimer);
+        if (idx >= 0) timersRef.current.splice(idx, 1);
         setIsCompiling(false);
 
         // After code is typed, show output lines
@@ -158,11 +167,15 @@ export default function CodePlayground() {
             outIndex++;
           } else {
             clearInterval(outTimer);
+            const idx2 = timersRef.current.indexOf(outTimer);
+            if (idx2 >= 0) timersRef.current.splice(idx2, 1);
             setIsRunning(false);
           }
         }, 400);
+        timersRef.current.push(outTimer);
       }
     }, 100);
+    timersRef.current.push(codeTimer);
   }
 
   useEffect(() => {
@@ -171,10 +184,13 @@ export default function CodePlayground() {
     }
   }, [outputLines]);
 
-  // Auto-run first demo
+  // Auto-run on active demo change, with cleanup
   useEffect(() => {
     const timer = setTimeout(runDemo, 500);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearAllTimers();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDemo]);
 

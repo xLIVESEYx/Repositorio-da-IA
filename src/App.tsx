@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import ThemeToggle from "./components/ThemeToggle";
 import HeroSection from "./components/HeroSection";
@@ -190,6 +190,9 @@ function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
+  const activeSectionRef = useRef(activeSection);
+  activeSectionRef.current = activeSection;
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
@@ -199,7 +202,7 @@ function Navbar() {
       )
         return;
 
-      const currentIndex = SECTION_IDS.indexOf(activeSection);
+      const currentIndex = SECTION_IDS.indexOf(activeSectionRef.current);
 
       if (e.key === "ArrowDown" || e.key === "PageDown") {
         e.preventDefault();
@@ -227,7 +230,7 @@ function Navbar() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSection]);
+  }, []); // Empty deps: uses ref to always get latest activeSection without re-registering
 
   const scrollToSection = useCallback((href: string) => {
     const id = href.replace("#", "");

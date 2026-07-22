@@ -33,10 +33,7 @@ export default function GradientMesh() {
       canvas!.width = window.innerWidth * dpr;
       canvas!.height = window.innerHeight * dpr;
       ctx!.scale(dpr, dpr);
-
-      if (points.length === 0) {
-        initPoints();
-      }
+      initPoints();
     }
 
     function initPoints() {

@@ -15,6 +15,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import CursorGlow from "./components/CursorGlow";
 import LoadingScreen from "./components/LoadingScreen";
 import SectionDivider from "./components/SectionDivider";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#home" },
@@ -33,7 +34,52 @@ const SECTION_IDS = [
   "sobre",
 ];
 
+// Performance monitoring
+const perfMarks: Record<string, number> = {};
+
+function mark(name: string) {
+  if (typeof performance !== "undefined") {
+    performance.mark(`app-${name}`);
+    perfMarks[name] = performance.now();
+  }
+}
+
+function measure(from: string, to: string) {
+  if (
+    typeof performance !== "undefined" &&
+    perfMarks[from] &&
+    perfMarks[to]
+  ) {
+    const duration = perfMarks[to] - perfMarks[from];
+    if (duration > 0) {
+      console.debug(`[Perf] ${from} → ${to}: ${duration.toFixed(1)}ms`);
+    }
+  }
+}
+
 function App() {
+  mark("mount");
+
+  useEffect(() => {
+    mark("mounted");
+    measure("mount", "mounted");
+
+    // Report total JS execution time
+    if (typeof performance !== "undefined") {
+      const navEntry = performance.getEntriesByType("navigation")[0] as (
+        PerformanceNavigationTiming | undefined
+      );
+      if (navEntry) {
+        console.debug(
+          `[Perf] DOM Interactive: ${navEntry.domInteractive.toFixed(0)}ms`
+        );
+        console.debug(
+          `[Perf] Total Load: ${navEntry.loadEventEnd.toFixed(0)}ms`
+        );
+      }
+    }
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-deep-950 text-white overflow-x-hidden">
       <LoadingScreen />
@@ -42,25 +88,27 @@ function App() {
 
       <div className="relative z-10">
         <Navbar />
-        <section id="home">
-          <HeroSection />
-        </section>
-        <SectionDivider variant="glow" />
-        <FeaturesSection />
-        <SectionDivider variant="line" />
-        <CapabilitiesSection />
-        <SectionDivider variant="glow" />
-        <StatsSection />
-        <SectionDivider variant="line" />
-        <TerminalConsole />
-        <SectionDivider variant="glow" />
-        <TechStackCarousel />
-        <SectionDivider variant="line" />
-        <ShowcaseSection />
-        <SectionDivider variant="glow" />
-        <TestimonialsSection />
-        <CTASection />
-        <FooterSection />
+        <ErrorBoundary>
+          <section id="home">
+            <HeroSection />
+          </section>
+          <SectionDivider variant="glow" />
+          <FeaturesSection />
+          <SectionDivider variant="line" />
+          <CapabilitiesSection />
+          <SectionDivider variant="glow" />
+          <StatsSection />
+          <SectionDivider variant="line" />
+          <TerminalConsole />
+          <SectionDivider variant="glow" />
+          <TechStackCarousel />
+          <SectionDivider variant="line" />
+          <ShowcaseSection />
+          <SectionDivider variant="glow" />
+          <TestimonialsSection />
+          <CTASection />
+          <FooterSection />
+        </ErrorBoundary>
         <ScrollToTop />
       </div>
     </div>
@@ -72,7 +120,6 @@ function Navbar() {
   const [activeSection, setActiveSection] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Track scroll position for navbar
   useEffect(() => {
     function handleScroll() {
       setIsScrolled(window.scrollY > 20);
@@ -96,7 +143,6 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on resize
   useEffect(() => {
     function handleResize() {
       if (window.innerWidth >= 768) {
@@ -107,7 +153,6 @@ function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -119,7 +164,6 @@ function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
-  // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
@@ -144,7 +188,6 @@ function Navbar() {
         el?.scrollIntoView({ behavior: "smooth" });
       }
 
-      // Number keys for direct navigation
       if (e.key >= "1" && e.key <= "9") {
         const index = parseInt(e.key) - 1;
         if (index < SECTION_IDS.length) {
@@ -200,7 +243,6 @@ function Navbar() {
             </span>
           </motion.a>
 
-          {/* Desktop navigation */}
           <motion.div
             className="hidden md:flex items-center gap-1"
             initial={{ opacity: 0, y: -10 }}
@@ -238,7 +280,6 @@ function Navbar() {
           </motion.div>
 
           <div className="flex items-center gap-3">
-            {/* GitHub button (desktop) */}
             <motion.a
               href="https://github.com/xLIVESEYx/Repositorio-da-IA"
               target="_blank"
@@ -254,7 +295,6 @@ function Navbar() {
               GitHub
             </motion.a>
 
-            {/* Mobile menu toggle */}
             <button
               className="md:hidden relative w-8 h-8 flex items-center justify-center"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -287,7 +327,6 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu overlay */}
       {isMobileMenuOpen && (
         <motion.div
           className="fixed inset-0 z-40 bg-deep-950/95 backdrop-blur-xl flex flex-col items-center justify-center"

@@ -1,8 +1,16 @@
 {
   "name": "repositorio-da-ia",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
+  "description": "Um experimento de autonomia total de IA. Criado inteiramente por inteligência artificial.",
+  "author": "Repositório da IA",
+  "license": "MIT",
+  "homepage": "https://github.com/xLIVESEYx/Repositorio-da-IA",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xLIVESEYx/Repositorio-da-IA.git"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",

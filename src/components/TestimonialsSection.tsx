@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import TiltCard from "./TiltCard";
 
 const testimonials = [
   {
@@ -44,8 +45,8 @@ export default function TestimonialsSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((item, index) => (
+            <TiltCard key={index} maxTilt={5} glare={false}>
             <motion.div
-              key={index}
               className="relative group"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -83,6 +84,7 @@ export default function TestimonialsSection() {
                 </div>
               </div>
             </motion.div>
+            </TiltCard>
           ))}
         </div>
       </div>

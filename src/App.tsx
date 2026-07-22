@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
+import ThemeToggle from "./components/ThemeToggle";
 import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import CapabilitiesSection from "./components/CapabilitiesSection";
@@ -249,7 +250,8 @@ function Navbar() {
             })}
           </motion.div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <motion.a
               href="https://github.com/xLIVESEYx/Repositorio-da-IA"
               target="_blank"

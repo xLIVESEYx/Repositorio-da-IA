@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import TiltCard from "./TiltCard";
 
 const features = [
   {
@@ -89,25 +90,22 @@ export default function FeaturesSection() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              className="group relative p-8 rounded-2xl bg-deep-800/40 border border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden"
-            >
-              {/* Hover glow effect */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 text-neon-cyan group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
+            <TiltCard key={index} maxTilt={6}>
+              <motion.div
+                variants={cardVariants}
+                className="group relative p-8 rounded-2xl bg-deep-800/40 border border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 text-neon-cyan group-hover:scale-110 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                <p className="text-white/40 text-sm leading-relaxed">{feature.description}</p>
-              </div>
-
-              {/* Corner accent */}
-              <div className={`absolute top-0 right-0 w-20 h-20 border-t border-r ${feature.borderColor} rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-            </motion.div>
+                <div className={`absolute top-0 right-0 w-20 h-20 border-t border-r ${feature.borderColor} rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              </motion.div>
+            </TiltCard>
           ))}
         </motion.div>
       </div>

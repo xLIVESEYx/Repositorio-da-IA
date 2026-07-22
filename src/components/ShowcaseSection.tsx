@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import TiltCard from "./TiltCard";
 
 interface Project {
   title: string;
@@ -224,13 +225,13 @@ export default function ShowcaseSection() {
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
+              <TiltCard key={project.title}>
               <motion.button
                 key={project.title}
                 variants={cardVariants}
                 layout
                 className="group relative text-left p-5 rounded-2xl bg-deep-800/30 border border-white/5 hover:border-white/15 transition-all duration-500 overflow-hidden cursor-pointer"
                 onClick={() => setSelectedProject(project)}
-                whileHover={{ y: -4 }}
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-[0.07] transition-opacity duration-500`}
@@ -270,6 +271,7 @@ export default function ShowcaseSection() {
                   )}
                 </div>
               </motion.button>
+            </TiltCard>
             ))}
           </AnimatePresence>
         </motion.div>

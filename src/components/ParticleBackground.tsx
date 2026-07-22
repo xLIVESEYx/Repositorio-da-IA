@@ -24,36 +24,68 @@ export default function ParticleBackground() {
 
     let animationId: number;
     let particles: Particle[] = [];
-    let mouseX = 0;
-    let mouseY = 0;
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let lastResizeTime = 0;
+    const resizeThrottle = 200;
+    let isVisible = true;
+
+    // Check for reduced motion
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    // Check for low power / mobile (fewer particles)
+    const isMobile =
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.innerWidth < 768;
+    const particleMultiplier = isMobile ? 0.3 : 1;
 
     function resize() {
+      const now = Date.now();
+      if (now - lastResizeTime < resizeThrottle) return;
+      lastResizeTime = now;
+
       canvas!.width = window.innerWidth;
       canvas!.height = window.innerHeight;
+      createParticles();
     }
 
     function createParticles() {
-      const count = Math.min(Math.floor(window.innerWidth * 0.05), 80);
+      const count = Math.min(
+        Math.floor(window.innerWidth * 0.04 * particleMultiplier),
+        isMobile ? 25 : 70
+      );
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * canvas!.width,
         y: Math.random() * canvas!.height,
-        size: Math.random() * 2 + 0.5,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.5 + 0.1,
+        size: Math.random() * (isMobile ? 1.5 : 2) + 0.5,
+        speedX: (Math.random() - 0.5) * (isMobile ? 0.15 : 0.3),
+        speedY: (Math.random() - 0.5) * (isMobile ? 0.15 : 0.3),
+        opacity: Math.random() * 0.4 + 0.1,
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
       }));
     }
 
     function drawConnections() {
+      const connectionDistance = isMobile ? 100 : 150;
+
       for (let i = 0; i < particles.length; i++) {
+        // Limit connections for performance
+        const maxConnections = isMobile ? 2 : 4;
+        let connections = 0;
+
         for (let j = i + 1; j < particles.length; j++) {
+          if (connections >= maxConnections) break;
+
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 150) {
-            const alpha = (1 - distance / 150) * 0.15;
+          if (distance < connectionDistance) {
+            connections++;
+            const alpha = (1 - distance / connectionDistance) * (isMobile ? 0.08 : 0.12);
             ctx!.beginPath();
             ctx!.strokeStyle = `rgba(168, 85, 247, ${alpha})`;
             ctx!.lineWidth = 0.5;
@@ -66,16 +98,25 @@ export default function ParticleBackground() {
     }
 
     function animate() {
+      if (!isVisible) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
 
-      particles.forEach((p) => {
-        // Mouse interaction - slight attraction
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
-          p.x += dx * 0.0002;
-          p.y += dy * 0.0002;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Mouse interaction (subtle)
+        if (!isMobile) {
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 200) {
+            p.x += dx * 0.0003;
+            p.y += dy * 0.0003;
+          }
         }
 
         p.x += p.speedX;
@@ -92,7 +133,7 @@ export default function ParticleBackground() {
         ctx!.globalAlpha = p.opacity;
         ctx!.fill();
         ctx!.globalAlpha = 1;
-      });
+      }
 
       drawConnections();
       animationId = requestAnimationFrame(animate);
@@ -103,25 +144,39 @@ export default function ParticleBackground() {
       mouseY = e.clientY;
     }
 
+    function onVisibilityChange() {
+      isVisible = !document.hidden;
+    }
+
+    // Debounced resize
+    let resizeTimer: number;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(resize, 300);
+    }
+
     resize();
-    createParticles();
     animate();
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none"
+      className="fixed inset-0 w-full h-full pointer-events-none select-none"
       style={{ zIndex: 0 }}
+      aria-hidden="true"
     />
   );
 }

@@ -6,35 +6,59 @@ import CapabilitiesSection from "./components/CapabilitiesSection";
 import StatsSection from "./components/StatsSection";
 import TerminalConsole from "./components/TerminalConsole";
 import TechStackCarousel from "./components/TechStackCarousel";
+import ShowcaseSection from "./components/ShowcaseSection";
+import TestimonialsSection from "./components/TestimonialsSection";
 import CTASection from "./components/CTASection";
 import FooterSection from "./components/FooterSection";
 import ParticleBackground from "./components/ParticleBackground";
 import ScrollToTop from "./components/ScrollToTop";
 import CursorGlow from "./components/CursorGlow";
 import LoadingScreen from "./components/LoadingScreen";
+import SectionDivider from "./components/SectionDivider";
 
 const NAV_ITEMS = [
+  { label: "Início", href: "#home" },
   { label: "Recursos", href: "#recursos" },
   { label: "Capacidades", href: "#capacidades" },
-  { label: "Console", href: "#console" },
+  { label: "Projetos", href: "#projetos" },
   { label: "Sobre", href: "#sobre" },
+];
+
+const SECTION_IDS = [
+  "home",
+  "recursos",
+  "capacidades",
+  "projetos",
+  "console",
+  "sobre",
 ];
 
 function App() {
   return (
-    <div className="relative min-h-screen bg-deep-950 text-white overflow-hidden">
+    <div className="relative min-h-screen bg-deep-950 text-white overflow-x-hidden">
       <LoadingScreen />
       <CursorGlow />
       <ParticleBackground />
-      
+
       <div className="relative z-10">
         <Navbar />
-        <HeroSection />
+        <section id="home">
+          <HeroSection />
+        </section>
+        <SectionDivider variant="glow" />
         <FeaturesSection />
+        <SectionDivider variant="line" />
         <CapabilitiesSection />
+        <SectionDivider variant="glow" />
         <StatsSection />
+        <SectionDivider variant="line" />
         <TerminalConsole />
+        <SectionDivider variant="glow" />
         <TechStackCarousel />
+        <SectionDivider variant="line" />
+        <ShowcaseSection />
+        <SectionDivider variant="glow" />
+        <TestimonialsSection />
         <CTASection />
         <FooterSection />
         <ScrollToTop />
@@ -48,16 +72,14 @@ function Navbar() {
   const [activeSection, setActiveSection] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Track scroll position for navbar and active section
+  // Track scroll position for navbar
   useEffect(() => {
     function handleScroll() {
       setIsScrolled(window.scrollY > 20);
 
-      // Determine active section
-      const sections = ["recursos", "capacidades", "console", "sobre"];
       const scrollPos = window.scrollY + 150;
 
-      for (const section of sections) {
+      for (const section of SECTION_IDS) {
         const el = document.getElementById(section);
         if (el) {
           const offsetTop = el.offsetTop;
@@ -97,6 +119,46 @@ function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+
+      const currentIndex = SECTION_IDS.indexOf(activeSection);
+
+      if (e.key === "ArrowDown" || e.key === "PageDown") {
+        e.preventDefault();
+        const nextIndex = Math.min(currentIndex + 1, SECTION_IDS.length - 1);
+        const el = document.getElementById(SECTION_IDS[nextIndex]);
+        el?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      if ((e.key === "ArrowUp" || e.key === "PageUp") && !e.ctrlKey) {
+        e.preventDefault();
+        const prevIndex = Math.max(currentIndex - 1, 0);
+        const el = document.getElementById(SECTION_IDS[prevIndex]);
+        el?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Number keys for direct navigation
+      if (e.key >= "1" && e.key <= "9") {
+        const index = parseInt(e.key) - 1;
+        if (index < SECTION_IDS.length) {
+          e.preventDefault();
+          const el = document.getElementById(SECTION_IDS[index]);
+          el?.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSection]);
+
   const scrollToSection = useCallback((href: string) => {
     const id = href.replace("#", "");
     const el = document.getElementById(id);
@@ -117,7 +179,7 @@ function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <motion.a
-            href="#"
+            href="#home"
             className="flex items-center gap-2 text-lg font-bold"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -130,8 +192,11 @@ function Navbar() {
             <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center text-xs font-bold text-deep-950">
               IA
             </span>
-            <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent hidden sm:inline">
               Repositório da IA
+            </span>
+            <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent sm:hidden">
+              IA
             </span>
           </motion.a>
 
@@ -142,30 +207,34 @@ function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className={`relative px-4 py-2 text-sm transition-colors duration-300 rounded-full ${
-                  activeSection === item.href.replace("#", "")
-                    ? "text-white bg-white/10"
-                    : "text-white/50 hover:text-white/80"
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(item.href);
-                }}
-              >
-                {item.label}
-                {activeSection === item.href.replace("#", "") && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-gradient-to-r from-neon-purple/10 to-neon-cyan/10"
-                    layoutId="nav-indicator"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const sectionId = item.href.replace("#", "");
+              const isActive = activeSection === sectionId;
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`relative px-3.5 py-2 text-sm transition-colors duration-300 rounded-full ${
+                    isActive
+                      ? "text-white"
+                      : "text-white/50 hover:text-white/80"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(item.href);
+                  }}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-neon-purple/10 to-neon-cyan/10 border border-white/5"
+                      layoutId="nav-indicator"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </a>
+              );
+            })}
           </motion.div>
 
           <div className="flex items-center gap-3">
@@ -193,16 +262,24 @@ function Navbar() {
             >
               <div className="flex flex-col gap-1.5">
                 <motion.span
-                  className="block w-5 h-[2px] bg-white/60 rounded-full"
-                  animate={isMobileMenuOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
+                  className="block w-5 h-[2px] bg-white/60 rounded-full origin-center"
+                  animate={
+                    isMobileMenuOpen
+                      ? { rotate: 45, y: 4 }
+                      : { rotate: 0, y: 0 }
+                  }
                 />
                 <motion.span
                   className="block w-5 h-[2px] bg-white/60 rounded-full"
                   animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
                 />
                 <motion.span
-                  className="block w-5 h-[2px] bg-white/60 rounded-full"
-                  animate={isMobileMenuOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
+                  className="block w-5 h-[2px] bg-white/60 rounded-full origin-center"
+                  animate={
+                    isMobileMenuOpen
+                      ? { rotate: -45, y: -4 }
+                      : { rotate: 0, y: 0 }
+                  }
                 />
               </div>
             </button>
@@ -243,7 +320,7 @@ function Navbar() {
               className="mt-4 px-8 py-3 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan text-white font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
             >
               Ver GitHub
             </motion.a>

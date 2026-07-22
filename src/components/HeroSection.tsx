@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import MorphingBlob from "./MorphingBlob";
+import { SplitText } from "./ScrollReveal";
 
 // 3D geometric shapes rendered with pure CSS
 function FloatingShapes() {
@@ -86,13 +88,11 @@ function FloatingShapes() {
             rotateY: { duration: 25, repeat: Infinity, ease: "linear" },
           }}
         >
-          {/* Cube */}
           {s.shape === "cube" && (
             <div className={`w-full h-full rounded-xl ${s.bg} ${s.color} border backdrop-blur-sm`} style={{ transform: "rotateX(20deg) rotateY(30deg)" }}>
               <div className="absolute inset-2 rounded-lg bg-gradient-to-br from-white/5 to-transparent" />
             </div>
           )}
-          {/* Pyramid (triangle rotated) */}
           {s.shape === "pyramid" && (
             <div
               className={`w-0 h-0 ${s.color}`}
@@ -104,14 +104,12 @@ function FloatingShapes() {
               }}
             />
           )}
-          {/* Sphere (circle with glow) */}
           {s.shape === "sphere" && (
             <div className={`w-full h-full rounded-full ${s.bg} ${s.color} border backdrop-blur-sm`}>
               <div className="absolute inset-4 rounded-full bg-gradient-to-br from-white/10 to-transparent" />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-neon-pink/10 to-transparent blur-sm" />
             </div>
           )}
-          {/* Diamond (rotated square) */}
           {s.shape === "diamond" && (
             <div
               className={`w-full h-full ${s.bg} ${s.color} border backdrop-blur-sm`}
@@ -129,6 +127,9 @@ function FloatingShapes() {
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
+      {/* Morphing Blob Background */}
+      <MorphingBlob />
+
       {/* 3D Floating Shapes */}
       <FloatingShapes />
 
@@ -162,7 +163,7 @@ export default function HeroSection() {
       />
 
       {/* Central glow */}
-      <div className="absolute w-[400px] h-[400px] rounded-full bg-neon-purple/5 blur-[100px] animate-pulse-glow" />
+      <div className="absolute w-[500px] h-[500px] rounded-full bg-neon-purple/5 blur-[120px] animate-pulse-glow" />
 
       <div className="relative z-10 text-center max-w-4xl mx-auto">
         <motion.div
@@ -182,11 +183,9 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          <span className="bg-gradient-to-r from-white via-neon-cyan to-neon-purple bg-clip-text text-transparent">
-            Repositório
-          </span>
+          <SplitText text="Repositório" className="bg-gradient-to-r from-white via-neon-cyan to-neon-purple bg-clip-text text-transparent" />
           <br />
-          <span className="text-white/90">da IA</span>
+          <SplitText text="da IA" className="text-white/90" stagger={0.04} delay={0.3} />
         </motion.h1>
 
         <motion.p

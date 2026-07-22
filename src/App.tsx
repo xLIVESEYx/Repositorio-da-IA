@@ -29,6 +29,7 @@ import AIChatDemo from "./components/AIChatDemo";
 import NeuralNetworkViz from "./components/NeuralNetworkViz";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import AudioVisualizer from "./components/AudioVisualizer";
+import { ParallaxSection } from "./components/ScrollReveal";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#home" },
@@ -78,11 +79,15 @@ function App() {
             <HeroSection />
           </section>
           <SectionDivider variant="glow" />
-          <FeaturesSection />
+          <ParallaxSection speed={0.15}>
+            <FeaturesSection />
+          </ParallaxSection>
           <SectionDivider variant="line" />
           <CapabilitiesSection />
           <SectionDivider variant="glow" />
-          <StatsSection />
+          <ParallaxSection speed={-0.1}>
+            <StatsSection />
+          </ParallaxSection>
           <SectionDivider variant="line" />
           <TerminalConsole />
           <SectionDivider variant="glow" />

@@ -15,6 +15,10 @@ import TimelineSection from "./components/TimelineSection";
 import CTASection from "./components/CTASection";
 import FooterSection from "./components/FooterSection";
 import ParticleBackground from "./components/ParticleBackground";
+import ParticleTrail from "./components/ParticleTrail";
+import GradientMesh from "./components/GradientMesh";
+import InteractiveGlobe from "./components/InteractiveGlobe";
+import CodePlayground from "./components/CodePlayground";
 import ScrollToTop from "./components/ScrollToTop";
 import CursorGlow from "./components/CursorGlow";
 import LoadingScreen from "./components/LoadingScreen";
@@ -32,6 +36,7 @@ const NAV_ITEMS = [
   { label: "Projetos", href: "#projetos" },
   { label: "Código", href: "#codigo" },
   { label: "Rede Neural", href: "#rede-neural" },
+  { label: "Globo", href: "#globo" },
   { label: "Sobre", href: "#sobre" },
 ];
 
@@ -42,16 +47,19 @@ const SECTION_IDS = [
   "projetos",
   "codigo",
   "rede-neural",
+  "globo",
   "timeline",
   "sobre",
 ];
 
 function App() {
   return (
-    <div className="relative min-h-screen bg-deep-950 text-white overflow-x-hidden">
+    <div className="relative min-h-screen bg-deep-950 text-white overflow-x-hidden transition-colors duration-300">
       <ReadingProgress />
       <LoadingScreen />
+      <ParticleTrail />
       <CursorGlow />
+      <GradientMesh />
       <ParticleBackground />
 
       <div className="relative z-10">
@@ -75,9 +83,13 @@ function App() {
           <SectionDivider variant="glow" />
           <CodeEditor />
           <SectionDivider variant="line" />
-          <GitHubStats />
+          <CodePlayground />
           <SectionDivider variant="glow" />
+          <GitHubStats />
+          <SectionDivider variant="line" />
           <NeuralNetworkViz />
+          <SectionDivider variant="glow" />
+          <InteractiveGlobe />
           <SectionDivider variant="line" />
           <TimelineSection />
           <SectionDivider variant="line" />
@@ -144,7 +156,6 @@ function Navbar() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Ignore if user is typing in an input or if modifier keys are held (browser shortcuts)
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||

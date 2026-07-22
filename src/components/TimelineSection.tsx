@@ -128,11 +128,7 @@ export default function TimelineSection() {
                     >
                       {/* Date badge */}
                       <div
-                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-xs text-white/40 mb-3 ${
-                          isLeft
-                            ? ""
-                            : ""
-                        }`}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-xs text-white/40 mb-3"
                       >
                         <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${event.gradient}`} />
                         {event.date}

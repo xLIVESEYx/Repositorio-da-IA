@@ -44,6 +44,28 @@ export default function CTASection() {
                 </span>
               </motion.a>
               <motion.button
+                onClick={async () => {
+                  if (navigator.share) {
+                    try {
+                      await navigator.share({
+                        title: 'Repositório da IA',
+                        text: 'Descubra o que uma IA pode criar com autonomia total! 🚀',
+                        url: 'https://github.com/xLIVESEYx/Repositorio-da-IA',
+                      });
+                    } catch { /* user cancelled */ }
+                  } else {
+                    try {
+                      await navigator.clipboard.writeText('https://github.com/xLIVESEYx/Repositorio-da-IA');
+                      alert('Link copiado para a área de transferência!');
+                    } catch {
+                      window.open(
+                        'https://twitter.com/intent/tweet?text=' + encodeURIComponent('Descubra o que uma IA pode criar com autonomia total! 🚀') + '&url=' + encodeURIComponent('https://github.com/xLIVESEYx/Repositorio-da-IA'),
+                        '_blank',
+                        'noopener'
+                      );
+                    }
+                  }
+                }}
                 className="px-8 py-3.5 rounded-full font-medium text-sm border border-white/10 text-white/60 hover:text-white hover:border-white/30 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

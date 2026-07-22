@@ -134,9 +134,11 @@ function Navbar() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      // Ignore if user is typing in an input or if modifier keys are held (browser shortcuts)
       if (
         e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
+        e.target instanceof HTMLTextAreaElement ||
+        e.ctrlKey || e.metaKey || e.altKey
       )
         return;
 
@@ -149,7 +151,7 @@ function Navbar() {
         el?.scrollIntoView({ behavior: "smooth" });
       }
 
-      if ((e.key === "ArrowUp" || e.key === "PageUp") && !e.ctrlKey) {
+      if (e.key === "ArrowUp" || e.key === "PageUp") {
         e.preventDefault();
         const prevIndex = Math.max(currentIndex - 1, 0);
         const el = document.getElementById(SECTION_IDS[prevIndex]);

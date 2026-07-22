@@ -32,13 +32,18 @@ export default function LoadingScreen() {
         charIndex++;
       } else {
         clearInterval(typeInterval);
-        setTimeout(() => {
+        const nextTimer = setTimeout(() => {
           setMessageIndex((prev) => prev + 1);
         }, 300);
+        nextTimers.push(nextTimer);
       }
     }, 30);
+    const nextTimers: number[] = [];
 
-    return () => clearInterval(typeInterval);
+    return () => {
+      clearInterval(typeInterval);
+      nextTimers.forEach(clearTimeout);
+    };
   }, [messageIndex]);
 
   // Check for reduced motion

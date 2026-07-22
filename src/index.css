@@ -234,6 +234,12 @@ body {
   overflow: hidden;
 }
 
+/* Audio visualizer bars */
+@keyframes audio-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,

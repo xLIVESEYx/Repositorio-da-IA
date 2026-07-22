@@ -28,6 +28,7 @@ import ReadingProgress from "./components/ReadingProgress";
 import AIChatDemo from "./components/AIChatDemo";
 import NeuralNetworkViz from "./components/NeuralNetworkViz";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
+import AudioVisualizer from "./components/AudioVisualizer";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#home" },
@@ -62,6 +63,14 @@ function App() {
       <GradientMesh />
       <ParticleBackground />
 
+      {/* Skip-to-content link for accessibility */}
+      <a
+        href="#home"
+        className="fixed -top-full left-4 z-[9999] px-4 py-2 rounded-b-lg bg-gradient-to-r from-neon-purple to-neon-cyan text-white text-sm font-medium transition-all duration-300 focus:top-0 focus:outline-none"
+      >
+        Ir para o conteúdo
+      </a>
+
       <div className="relative z-10">
         <Navbar />
         <ErrorBoundary>
@@ -94,6 +103,28 @@ function App() {
           <TimelineSection />
           <SectionDivider variant="line" />
           <TestimonialsSection />
+          <SectionDivider variant="glow" />
+          <section className="py-16 px-6">
+            <div className="max-w-5xl mx-auto">
+              <motion.div
+                className="text-center mb-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-3xl sm:text-4xl font-bold mb-3">
+                  <span className="bg-gradient-to-r from-neon-cyan via-neon-pink to-neon-purple bg-clip-text text-transparent">
+                    Visualizador de Áudio
+                  </span>
+                </h2>
+                <p className="text-white/40 text-sm max-w-lg mx-auto">
+                  Ative o som ambiente gerado por IA e veja as frequências em tempo real.
+                </p>
+              </motion.div>
+              <AudioVisualizer />
+            </div>
+          </section>
           <CTASection />
           <FooterSection />
         </ErrorBoundary>

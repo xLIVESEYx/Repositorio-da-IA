@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 
 interface GitHubData {
@@ -8,20 +8,25 @@ interface GitHubData {
   description: string;
 }
 
+const MAX_RETRIES = 3;
+const REFRESH_INTERVAL = 120000; // 2 minutes (respects GitHub unauthenticated rate limit)
+
 export default function GitHubStats() {
   const [data, setData] = useState<GitHubData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const retryCount = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
+    let retryTimeout: ReturnType<typeof setTimeout>;
 
     async function fetchStats() {
       try {
         const res = await fetch(
           "https://api.github.com/repos/xLIVESEYx/Repositorio-da-IA"
         );
-        if (!res.ok) throw new Error("GitHub API error");
+        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
         const json = await res.json();
         if (!cancelled) {
           setData({
@@ -31,29 +36,45 @@ export default function GitHubStats() {
             description: json.description ?? "",
           });
           setIsLoading(false);
+          setError(false);
+          retryCount.current = 0;
         }
       } catch {
         if (!cancelled) {
-          setError(true);
-          setIsLoading(false);
+          retryCount.current++;
+          if (retryCount.current <= MAX_RETRIES) {
+            // Exponential backoff: 2s, 4s, 8s
+            const backoff = Math.pow(2, retryCount.current) * 1000;
+            retryTimeout = setTimeout(fetchStats, backoff);
+          } else {
+            setError(true);
+            setIsLoading(false);
+          }
         }
       }
     }
 
     fetchStats();
-    // Refresh every 60 seconds
-    const interval = setInterval(fetchStats, 60000);
+    const interval = setInterval(() => {
+      retryCount.current = 0;
+      fetchStats();
+    }, REFRESH_INTERVAL);
+
     return () => {
       cancelled = true;
       clearInterval(interval);
+      clearTimeout(retryTimeout);
     };
   }, []);
 
-  const statItems = [
-    { label: "Estrelas", value: data?.stars ?? 0, icon: "★", color: "text-yellow-400" },
-    { label: "Forks", value: data?.forks ?? 0, icon: "⑂", color: "text-neon-cyan" },
-    { label: "Issues", value: data?.issues ?? 0, icon: "!", color: "text-neon-purple" },
-  ];
+  const statItems = useMemo(
+    () => [
+      { label: "Estrelas", value: data?.stars ?? 0, icon: "★", color: "text-yellow-400" },
+      { label: "Forks", value: data?.forks ?? 0, icon: "⑂", color: "text-neon-cyan" },
+      { label: "Issues", value: data?.issues ?? 0, icon: "!", color: "text-neon-purple" },
+    ],
+    [data]
+  );
 
   return (
     <section className="relative py-20 px-6">
@@ -71,7 +92,7 @@ export default function GitHubStats() {
             </span>
           </h2>
           <p className="text-white/40 text-lg max-w-2xl mx-auto">
-            Estatísticas ao vivo do repositório — dados atualizados diretamente da API do GitHub.
+            Estatísticas ao vivo do repositório — dados atualizados da API do GitHub.
           </p>
         </motion.div>
 
@@ -82,7 +103,6 @@ export default function GitHubStats() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <div className="relative p-8 rounded-2xl border border-white/5 bg-deep-800/40 backdrop-blur-sm overflow-hidden">
-            {/* Decorative grid */}
             <div
               className="absolute inset-0 opacity-[0.02]"
               style={{
@@ -93,7 +113,6 @@ export default function GitHubStats() {
             />
 
             <div className="relative z-10">
-              {/* Repo info */}
               <div className="flex items-center gap-3 mb-8 pb-6 border-b border-white/5">
                 <div className="w-12 h-12 rounded-xl bg-deep-700 flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -119,7 +138,6 @@ export default function GitHubStats() {
                 </div>
               </div>
 
-              {/* Stats grid */}
               <div className="grid grid-cols-3 gap-6">
                 {statItems.map((item, i) => (
                   <motion.div
@@ -154,9 +172,8 @@ export default function GitHubStats() {
               </div>
             </div>
 
-            {/* Live indicator */}
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className={`w-1.5 h-1.5 rounded-full ${error ? "bg-red-400" : "bg-green-400"} animate-pulse`} />
               <span className="text-[10px] text-white/20 font-mono">
                 {error ? "OFFLINE" : isLoading ? "..." : "LIVE"}
               </span>

@@ -4,6 +4,7 @@ export default function CursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
   const posRef = useRef({ x: 0, y: 0 });
   const mouseRef = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     function onMouseMove(e: MouseEvent) {
@@ -11,14 +12,13 @@ export default function CursorGlow() {
     }
 
     function animate() {
-      // Smooth interpolation
       posRef.current.x += (mouseRef.current.x - posRef.current.x) * 0.08;
       posRef.current.y += (mouseRef.current.y - posRef.current.y) * 0.08;
 
       if (glowRef.current) {
         glowRef.current.style.transform = `translate(${posRef.current.x - 100}px, ${posRef.current.y - 100}px)`;
       }
-      requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
     }
 
     // Check for reduced motion preference
@@ -30,10 +30,13 @@ export default function CursorGlow() {
     if (!hasFinePointer) return;
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
-    animate();
+    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, []);
 

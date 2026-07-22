@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const loadingMessages = [
@@ -13,13 +13,21 @@ export default function LoadingScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [messageIndex, setMessageIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
+    // Clear any previous timers
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+
     if (messageIndex >= loadingMessages.length) {
       const timer = setTimeout(() => {
         setIsVisible(false);
       }, 600);
-      return () => clearTimeout(timer);
+      timersRef.current.push(timer);
+      return () => {
+        timersRef.current.forEach(clearTimeout);
+      };
     }
 
     const message = loadingMessages[messageIndex];
@@ -35,14 +43,13 @@ export default function LoadingScreen() {
         const nextTimer = setTimeout(() => {
           setMessageIndex((prev) => prev + 1);
         }, 300);
-        nextTimers.push(nextTimer);
+        timersRef.current.push(nextTimer);
       }
     }, 30);
-    const nextTimers: number[] = [];
 
     return () => {
       clearInterval(typeInterval);
-      nextTimers.forEach(clearTimeout);
+      timersRef.current.forEach(clearTimeout);
     };
   }, [messageIndex]);
 

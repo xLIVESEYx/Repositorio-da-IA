@@ -38,3 +38,12 @@ createRoot(root).render(
     </ThemeProvider>
   </StrictMode>,
 )
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      console.debug('[SW] Service worker registration failed');
+    });
+  });
+}
